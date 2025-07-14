@@ -1,4 +1,5 @@
-// CheckoutForm.jsx
+// src/Pages/dashboard/CheckoutForm.jsx
+
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -21,14 +22,22 @@ const CheckoutForm = ({ camp }) => {
     setProcessing(true);
 
     try {
-      // 1. Create payment intent from backend
+      // ✅ Check amount value
+      const amount = parseFloat(camp?.campFees);
+      if (!amount || amount < 1) {
+        toast.error("Invalid camp fee.");
+        setProcessing(false);
+        return;
+      }
+
+      // ✅ Step 1: Create payment intent
       const { data } = await axiosSecure.post("/create-payment-intent", {
-        amount: camp.fees,
+        amount,
       });
 
       const clientSecret = data.clientSecret;
 
-      // 2. Confirm payment with Stripe
+      // ✅ Step 2: Confirm card payment
       const { paymentIntent, error } = await stripe.confirmCardPayment(clientSecret, {
         payment_method: {
           card,
@@ -46,13 +55,13 @@ const CheckoutForm = ({ camp }) => {
       }
 
       if (paymentIntent.status === "succeeded") {
-        // 3. Save payment info to DB
+        // ✅ Step 3: Store payment info
         const paymentInfo = {
           campId: camp._id,
           email: formData.email,
           name: formData.name,
           transactionId: paymentIntent.id,
-          amount: camp.fees,
+          amount,
           date: new Date(),
         };
 
@@ -60,11 +69,11 @@ const CheckoutForm = ({ camp }) => {
 
         toast.success("✅ Payment successful!");
         reset();
-        setProcessing(false);
       }
     } catch (err) {
       console.error("Payment error:", err);
       toast.error("❌ Something went wrong.");
+    } finally {
       setProcessing(false);
     }
   };
@@ -73,17 +82,17 @@ const CheckoutForm = ({ camp }) => {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <input
         {...register("name")}
-        defaultValue={camp.participantName}
+        defaultValue={camp?.participantName}
         className="input input-bordered w-full"
         readOnly
       />
       <input
         {...register("email")}
-        defaultValue={camp.participantEmail}
+        defaultValue={camp?.participantEmail}
         className="input input-bordered w-full"
         readOnly
       />
-      <p className="text-lg font-medium text-gray-700">Amount: ${camp.fees}</p>
+      <p className="text-lg font-medium text-gray-700">Amount: ${camp?.campFees}</p>
 
       <CardElement
         options={{
@@ -103,7 +112,7 @@ const CheckoutForm = ({ camp }) => {
         disabled={!stripe || processing}
         className="btn bg-green-700 text-white w-full"
       >
-        {processing ? "Processing..." : `Pay $${camp.fees}`}
+        {processing ? "Processing..." : `Pay $${camp?.campFees}`}
       </button>
     </form>
   );

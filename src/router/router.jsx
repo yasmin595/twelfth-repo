@@ -16,6 +16,7 @@ import AvailablePage from "../Pages/AvailableCamp";
 import CampDetails from "../Pages/dashboard/CampDetails";
 import RegisteredCamps from "../Pages/dashboard/RegisterCamp";
 import PaymentPage from "../Pages/dashboard/PaymentPage";
+import PaymentHistory from "../Pages/dashboard/PaymentHistory";
 
 
 
@@ -69,6 +70,11 @@ export     const router = createBrowserRouter([
         
       
       },
+      {
+        path:"/dashboard/participant/payment-history",
+        element:<PrivateRoute><PaymentHistory></PaymentHistory></PrivateRoute>
+      }
+      ,
       {
 
        path: '/dashboard/participant/registered-camps',

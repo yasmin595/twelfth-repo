@@ -18,6 +18,7 @@ const Sidebar = () => {
     { to: "/dashboard/organizer/manage-camps", icon: <FaRegListAlt />, label: "Manage Camps" },
     { to: "/dashboard/organizer/registered-camps", icon: <FaUsers />, label: "Registered Camps" },
     { to: "/dashboard/participant/registered-camps", icon: <FaUsers />, label: "Registered participant Camps" },
+    { to: "/dashboard/participant/payment-history", icon: <FaUsers />, label: "Payment history" },
   ];
 
   return (
