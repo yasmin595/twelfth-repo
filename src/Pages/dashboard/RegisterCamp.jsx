@@ -3,13 +3,13 @@ import { useQuery } from "@tanstack/react-query";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import useAuth from "../../hooks/useAuth";
 import Swal from "sweetalert2";
-import { Link } from "react-router";
+import { Link } from "react-router"; 
 
 const RegisteredCamps = () => {
   const axiosSecure = useAxiosSecure();
   const { user } = useAuth();
 
-  // Fetch registered camps for this participant
+  // ✅ Fetch registered camps
   const { data: camps = [], refetch, isLoading } = useQuery({
     queryKey: ["registeredCamps", user?.email],
     enabled: !!user?.email,
@@ -19,9 +19,10 @@ const RegisteredCamps = () => {
     },
   });
 
-  // Cancel Registration
+  // ✅ Handle cancel registration
   const handleCancel = async (id, isPaid) => {
     if (isPaid) return;
+
     const confirm = await Swal.fire({
       title: "Are you sure?",
       text: "You want to cancel your registration!",
@@ -31,8 +32,8 @@ const RegisteredCamps = () => {
     });
 
     if (confirm.isConfirmed) {
-      await axiosSecure.delete(`/cancel-camp/${id}`);
-      Swal.fire("Cancelled!", "Registration has been removed.", "success");
+      await axiosSecure.delete(`/registered-camp/${id}`);
+      Swal.fire("Cancelled!", "Your registration has been removed.", "success");
       refetch();
     }
   };
@@ -42,6 +43,7 @@ const RegisteredCamps = () => {
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-4 text-green-700">Registered Camps</h2>
+
       <div className="overflow-x-auto">
         <table className="table">
           <thead className="bg-green-200">
@@ -49,7 +51,7 @@ const RegisteredCamps = () => {
               <th>#</th>
               <th>Camp</th>
               <th>Fees</th>
-              <th>Status</th>
+              <th>Payment</th>
               <th>Confirmation</th>
               <th>Feedback</th>
               <th>Cancel</th>
@@ -61,25 +63,31 @@ const RegisteredCamps = () => {
                 <td>{index + 1}</td>
                 <td>{camp.campName}</td>
                 <td>${camp.campFees}</td>
+
+                {/* ✅ Payment Status */}
                 <td>
                   {camp.paymentStatus === "paid" ? (
-                    <span className="text-green-600 font-bold">Paid</span>
+                    <span className="text-green-600 font-semibold">Paid</span>
                   ) : (
                     <Link
                       to={`/dashboard/payment/${camp._id}`}
-                      className="btn btn-sm btn-outline"
+                      className="btn btn-sm btn-outline btn-success"
                     >
                       Pay
                     </Link>
                   )}
                 </td>
+
+                {/* ✅ Confirmation Status */}
                 <td>
                   {camp.confirmationStatus === "confirmed" ? (
-                    <span className="text-green-600">Confirmed</span>
+                    <span className="text-green-500">Confirmed</span>
                   ) : (
-                    <span className="text-yellow-600">Pending</span>
+                    <span className="text-yellow-500">Pending</span>
                   )}
                 </td>
+
+                {/* ✅ Feedback */}
                 <td>
                   {camp.paymentStatus === "paid" ? (
                     <Link
@@ -89,9 +97,11 @@ const RegisteredCamps = () => {
                       Feedback
                     </Link>
                   ) : (
-                    <span className="text-gray-400">--</span>
+                    <span className="text-gray-400">N/A</span>
                   )}
                 </td>
+
+                {/* ✅ Cancel Button */}
                 <td>
                   <button
                     className="btn btn-sm btn-error text-white"
@@ -105,7 +115,11 @@ const RegisteredCamps = () => {
             ))}
           </tbody>
         </table>
-        {camps.length === 0 && <p className="text-center mt-4">No camps registered yet.</p>}
+
+        {/* ✅ No camp message */}
+        {camps.length === 0 && (
+          <p className="text-center mt-4 text-gray-500">You haven't registered for any camp yet.</p>
+        )}
       </div>
     </div>
   );
