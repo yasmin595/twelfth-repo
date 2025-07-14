@@ -17,6 +17,7 @@ import CampDetails from "../Pages/dashboard/CampDetails";
 import RegisteredCamps from "../Pages/dashboard/RegisterCamp";
 import PaymentPage from "../Pages/dashboard/PaymentPage";
 import PaymentHistory from "../Pages/dashboard/PaymentHistory";
+import FeedbackForm from "../Pages/dashboard/FeedbackForm";
 
 
 
@@ -75,6 +76,13 @@ export     const router = createBrowserRouter([
         element:<PrivateRoute><PaymentHistory></PaymentHistory></PrivateRoute>
       }
       ,
+      {
+        path:"/dashboard/participant/feedback/:id",
+        element:<PrivateRoute><FeedbackForm></FeedbackForm></PrivateRoute>
+      }
+      ,
+
+
       {
 
        path: '/dashboard/participant/registered-camps',

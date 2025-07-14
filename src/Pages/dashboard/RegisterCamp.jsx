@@ -91,7 +91,7 @@ const RegisteredCamps = () => {
                 <td>
                   {camp.paymentStatus === "paid" ? (
                     <Link
-                      to={`/dashboard/feedback/${camp._id}`}
+                      to={`/dashboard/participant/feedback/${camp._id}`}
                       className="btn btn-sm btn-info text-white"
                     >
                       Feedback

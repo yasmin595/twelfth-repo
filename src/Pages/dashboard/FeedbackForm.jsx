@@ -3,7 +3,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import { toast } from "react-toastify";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router";
 
 const FeedbackForm = () => {
   const { id } = useParams(); // campId or participantId
