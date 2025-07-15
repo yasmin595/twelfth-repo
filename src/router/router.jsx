@@ -20,6 +20,7 @@ import PaymentHistory from "../Pages/dashboard/PaymentHistory";
 import FeedbackForm from "../Pages/dashboard/FeedbackForm";
 import ManageRegistered from "../Pages/dashboard/ManageRegistered";
 import OrganizerProfile from "../Pages/dashboard/OrganizerProfile";
+import Analytics from "../Pages/dashboard/Analytics";
 
 
 
@@ -89,6 +90,10 @@ export     const router = createBrowserRouter([
         element:<PrivateRoute><PaymentHistory></PaymentHistory></PrivateRoute>
       }
       ,
+      {
+        path:"/dashboard/participant/analytics",
+        element:<Analytics></Analytics>
+      },
       {
         path:"/dashboard/participant/feedback/:id",
         element:<PrivateRoute><FeedbackForm></FeedbackForm></PrivateRoute>
