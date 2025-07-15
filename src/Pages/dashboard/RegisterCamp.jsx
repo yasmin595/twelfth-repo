@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import useAuth from "../../hooks/useAuth";
 import Swal from "sweetalert2";
-import { Link } from "react-router"; 
+import { Link } from "react-router";
 
 const RegisteredCamps = () => {
   const axiosSecure = useAxiosSecure();
@@ -19,8 +19,8 @@ const RegisteredCamps = () => {
     },
   });
 
-  // ✅ Handle cancel registration
-  const handleCancel = async (id, isPaid) => {
+  // ✅ Handle cancel registration (separate delete and patch)
+  const handleCancel = async (participantId, campId, isPaid) => {
     if (isPaid) return;
 
     const confirm = await Swal.fire({
@@ -32,9 +32,19 @@ const RegisteredCamps = () => {
     });
 
     if (confirm.isConfirmed) {
-      await axiosSecure.delete(`/registered-camp/${id}`);
-      Swal.fire("Cancelled!", "Your registration has been removed.", "success");
-      refetch();
+      try {
+        // Step 1: Delete participant
+        await axiosSecure.delete(`/participants/${participantId}`);
+
+        // Step 2: Decrease participant count in the related camp
+        await axiosSecure.patch(`/camps/${campId}/decrease`);
+
+        Swal.fire("Cancelled!", "Your registration has been removed.", "success");
+        refetch();
+      } catch (error) {
+        console.error("Error during cancel:", error);
+        Swal.fire("Error", "Something went wrong. Please try again.", "error");
+      }
     }
   };
 
@@ -106,7 +116,7 @@ const RegisteredCamps = () => {
                   <button
                     className="btn btn-sm btn-error text-white"
                     disabled={camp.paymentStatus === "paid"}
-                    onClick={() => handleCancel(camp._id, camp.paymentStatus === "paid")}
+                    onClick={() => handleCancel(camp._id, camp.campId, camp.paymentStatus === "paid")}
                   >
                     Cancel
                   </button>

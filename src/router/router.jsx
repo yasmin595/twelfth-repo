@@ -18,6 +18,7 @@ import RegisteredCamps from "../Pages/dashboard/RegisterCamp";
 import PaymentPage from "../Pages/dashboard/PaymentPage";
 import PaymentHistory from "../Pages/dashboard/PaymentHistory";
 import FeedbackForm from "../Pages/dashboard/FeedbackForm";
+import ManageRegistered from "../Pages/dashboard/ManageRegistered";
 
 
 
@@ -61,6 +62,9 @@ export     const router = createBrowserRouter([
      {
     path: '/dashboard/organizer/update-camp/:campId',
     element: <UpdateCamp></UpdateCamp>
+  },{
+    path: '/dashboard/organizer/manage-registered-camps',
+    element: <ManageRegistered></ManageRegistered>
   },
    {
 
