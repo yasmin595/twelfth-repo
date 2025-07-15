@@ -14,12 +14,19 @@ const ManageRegistered = () => {
     },
   });
 
-  const handleConfirm = async (id) => {
+  const handleConfirm = async (registrationId, participantEmail) => {
     try {
-      await axiosSecure.patch(`/confirm-registration/${id}`);
+      // 1. Update confirmation status in registration
+      await axiosSecure.patch(`/confirm-registration/${registrationId}`);
+
+      // 2. Update user role to "participant"
+      await axiosSecure.patch(`/users/participant/${participantEmail}`);
+
+      // 3. Notify and refresh
       Swal.fire("Confirmed!", "Participant confirmed successfully.", "success");
       refetch();
     } catch (error) {
+      console.error("Confirmation error:", error);
       Swal.fire("Error", "Failed to confirm registration.", "error");
     }
   };
@@ -86,7 +93,7 @@ const ManageRegistered = () => {
                   ) : reg.paymentStatus === "paid" ? (
                     <button
                       className="btn btn-sm btn-success"
-                      onClick={() => handleConfirm(reg._id)}
+                      onClick={() => handleConfirm(reg._id, reg.participantEmail)}
                     >
                       Confirm
                     </button>

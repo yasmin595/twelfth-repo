@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-
 import { Link, useLocation, useNavigate } from 'react-router';
-
 import axios from 'axios';
 import useAxios from '../../hooks/useAxios';
 import useAuth from '../../hooks/useAuth';
 import SocialLogIn from './SocialLogin';
-
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const Register = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
-  const { createUser, updateUser} = useAuth();
+  const { createUser, updateUser } = useAuth();
   const [profilePic, setProfilePic] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const axiosInstance = useAxios();
   const location = useLocation();
   const navigate = useNavigate();
@@ -21,19 +20,16 @@ const Register = () => {
   const onSubmit = data => {
     createUser(data.email, data.password)
       .then(async (result) => {
-        // Save user info in backend
         const userInfo = {
           email: data.email,
           role: 'user',
-          
-           photoURL:profilePic,
+          photoURL: profilePic,
           created_at: new Date().toISOString(),
           last_log_in: new Date().toISOString()
         };
 
         await axiosInstance.post('/users', userInfo);
 
-        // Update Firebase profile
         const userProfile = {
           displayName: data.name,
           photoURL: profilePic
@@ -77,14 +73,10 @@ const Register = () => {
             <input
               type="text"
               placeholder="Your Name"
-              className={`input input-bordered w-full focus:outline-none focus:ring-2 focus:ring-green-600 ${
-                errors.name ? 'border-red-500' : ''
-              }`}
+              className={`input input-bordered w-full focus:outline-none focus:ring-2 focus:ring-green-600 ${errors.name ? 'border-red-500' : ''}`}
               {...register('name', { required: 'Name is required' })}
             />
-            {errors.name && (
-              <p className="text-red-600 mt-1 text-sm">{errors.name.message}</p>
-            )}
+            {errors.name && <p className="text-red-600 mt-1 text-sm">{errors.name.message}</p>}
           </div>
 
           {/* Profile Picture */}
@@ -111,36 +103,36 @@ const Register = () => {
             <input
               type="email"
               placeholder="Email"
-              className={`input input-bordered w-full focus:outline-none focus:ring-2 focus:ring-green-600 ${
-                errors.email ? 'border-red-500' : ''
-              }`}
+              className={`input input-bordered w-full focus:outline-none focus:ring-2 focus:ring-green-600 ${errors.email ? 'border-red-500' : ''}`}
               {...register('email', { required: 'Email is required' })}
             />
-            {errors.email && (
-              <p className="text-red-600 mt-1 text-sm">{errors.email.message}</p>
-            )}
+            {errors.email && <p className="text-red-600 mt-1 text-sm">{errors.email.message}</p>}
           </div>
 
-          {/* Password */}
+          {/* Password with Toggle */}
           <div>
             <label className="block text-green-700 font-semibold mb-1">Password</label>
-            <input
-              type="password"
-              placeholder="Password"
-              className={`input input-bordered w-full focus:outline-none focus:ring-2 focus:ring-green-600 ${
-                errors.password ? 'border-red-500' : ''
-              }`}
-              {...register('password', {
-                required: 'Password is required',
-                minLength: {
-                  value: 6,
-                  message: 'Password must be at least 6 characters',
-                },
-              })}
-            />
-            {errors.password && (
-              <p className="text-red-600 mt-1 text-sm">{errors.password.message}</p>
-            )}
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Password"
+                className={`input input-bordered w-full pr-10 focus:outline-none focus:ring-2 focus:ring-green-600 ${errors.password ? 'border-red-500' : ''}`}
+                {...register('password', {
+                  required: 'Password is required',
+                  minLength: {
+                    value: 6,
+                    message: 'Password must be at least 6 characters',
+                  },
+                })}
+              />
+              <span
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </span>
+            </div>
+            {errors.password && <p className="text-red-600 mt-1 text-sm">{errors.password.message}</p>}
           </div>
 
           {/* Submit Button */}
@@ -151,18 +143,17 @@ const Register = () => {
             Register
           </button>
         </form>
-          <SocialLogIn></SocialLogIn>
 
+        {/* Social Login */}
+        <SocialLogIn />
+
+        {/* Redirect to Login */}
         <p className="mt-6 text-center text-gray-600">
           Already have an account?{' '}
           <Link to="/login" className="text-green-700 font-semibold hover:underline">
             Login
           </Link>
         </p>
-
-        <div className="mt-6">
-   
-        </div>
       </div>
     </div>
   );
