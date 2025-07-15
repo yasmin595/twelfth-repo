@@ -8,7 +8,8 @@ import { toast } from "react-toastify";
 import Lottie from "lottie-react";
 import logLottie from "../../assets/lottie.json";
 import useAuth from "../../hooks/useAuth";
-import SocialLogin from "./SocialLogin";
+import SocialLogIn from "./SocialLogin";
+
 // import { TabTitle } from "../utils/General";
 
 
@@ -112,7 +113,7 @@ const LogIn = () => {
             </button>
 
             {/* Social Login */}
-         <SocialLogin></SocialLogin>
+         <SocialLogIn></SocialLogIn>
 
             <p className="font-semibold text-center pt-5">
               Don't Have An Account?{" "}

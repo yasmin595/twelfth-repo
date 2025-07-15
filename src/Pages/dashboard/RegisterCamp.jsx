@@ -9,7 +9,7 @@ const RegisteredCamps = () => {
   const axiosSecure = useAxiosSecure();
   const { user } = useAuth();
 
-  // ✅ Fetch registered camps
+  // Fetch registered camps for the logged-in user
   const { data: camps = [], refetch, isLoading } = useQuery({
     queryKey: ["registeredCamps", user?.email],
     enabled: !!user?.email,
@@ -19,34 +19,35 @@ const RegisteredCamps = () => {
     },
   });
 
-  // ✅ Handle cancel registration (separate delete and patch)
-  const handleCancel = async (participantId, campId, isPaid) => {
-    if (isPaid) return;
+  // Handle cancel registration
+ const handleCancel = async (participantId, campId, isPaid) => {
+  if (isPaid) return;
 
-    const confirm = await Swal.fire({
-      title: "Are you sure?",
-      text: "You want to cancel your registration!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, cancel it!",
-    });
+  const confirm = await Swal.fire({
+    title: "Are you sure?",
+    text: "You want to cancel your registration!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Yes, cancel it!",
+  });
 
-    if (confirm.isConfirmed) {
-      try {
-        // Step 1: Delete participant
-        await axiosSecure.delete(`/participants/${participantId}`);
+  if (confirm.isConfirmed) {
+    try {
+     
+      await axiosSecure.delete(`/registered-camp/${participantId}`);
 
-        // Step 2: Decrease participant count in the related camp
-        await axiosSecure.patch(`/camps/${campId}/decrease`);
+   await axiosSecure.patch(`/camps/${campId}/decrease`);
 
-        Swal.fire("Cancelled!", "Your registration has been removed.", "success");
-        refetch();
-      } catch (error) {
-        console.error("Error during cancel:", error);
-        Swal.fire("Error", "Something went wrong. Please try again.", "error");
-      }
+
+      Swal.fire("Cancelled!", "Your registration has been removed.", "success");
+      refetch();
+    } catch (error) {
+      console.error("Error during cancel:", error);
+      Swal.fire("Error", "Something went wrong. Please try again.", "error");
     }
-  };
+  }
+};
+
 
   if (isLoading) return <p className="text-center">Loading registered camps...</p>;
 
@@ -68,68 +69,73 @@ const RegisteredCamps = () => {
             </tr>
           </thead>
           <tbody>
-            {camps.map((camp, index) => (
-              <tr key={camp._id} className="hover">
-                <td>{index + 1}</td>
-                <td>{camp.campName}</td>
-                <td>${camp.campFees}</td>
-
-                {/* ✅ Payment Status */}
-                <td>
-                  {camp.paymentStatus === "paid" ? (
-                    <span className="text-green-600 font-semibold">Paid</span>
-                  ) : (
-                    <Link
-                      to={`/dashboard/payment/${camp._id}`}
-                      className="btn btn-sm btn-outline btn-success"
-                    >
-                      Pay
-                    </Link>
-                  )}
-                </td>
-
-                {/* ✅ Confirmation Status */}
-                <td>
-                  {camp.confirmationStatus === "confirmed" ? (
-                    <span className="text-green-500">Confirmed</span>
-                  ) : (
-                    <span className="text-yellow-500">Pending</span>
-                  )}
-                </td>
-
-                {/* ✅ Feedback */}
-                <td>
-                  {camp.paymentStatus === "paid" ? (
-                    <Link
-                      to={`/dashboard/participant/feedback/${camp._id}`}
-                      className="btn btn-sm btn-info text-white"
-                    >
-                      Feedback
-                    </Link>
-                  ) : (
-                    <span className="text-gray-400">N/A</span>
-                  )}
-                </td>
-
-                {/* ✅ Cancel Button */}
-                <td>
-                  <button
-                    className="btn btn-sm btn-error text-white"
-                    disabled={camp.paymentStatus === "paid"}
-                    onClick={() => handleCancel(camp._id, camp.campId, camp.paymentStatus === "paid")}
-                  >
-                    Cancel
-                  </button>
+            {camps.length === 0 ? (
+              <tr>
+                <td colSpan="7" className="text-center text-gray-500 py-4">
+                  You haven't registered for any camp yet.
                 </td>
               </tr>
-            ))}
+            ) : (
+              camps.map((camp, index) => (
+                <tr key={camp._id} className="hover">
+                  <td>{index + 1}</td>
+                  <td>{camp.campName}</td>
+                  <td>${camp.campFees}</td>
+
+                  {/* Payment Status */}
+                  <td>
+                    {camp.paymentStatus === "paid" ? (
+                      <span className="text-green-600 font-semibold">Paid</span>
+                    ) : (
+                      <Link
+                        to={`/dashboard/payment/${camp._id}`}
+                        className="btn btn-sm btn-outline btn-success"
+                      >
+                        Pay
+                      </Link>
+                    )}
+                  </td>
+
+                  {/* Confirmation Status */}
+                  <td>
+                    {camp.confirmationStatus === "confirmed" ? (
+                      <span className="text-green-500">Confirmed</span>
+                    ) : (
+                      <span className="text-yellow-500">Pending</span>
+                    )}
+                  </td>
+
+                  {/* Feedback */}
+                  <td>
+                    {camp.paymentStatus === "paid" ? (
+                      <Link
+                        to={`/dashboard/participant/feedback/${camp._id}`}
+                        className="btn btn-sm btn-info text-white"
+                      >
+                        Feedback
+                      </Link>
+                    ) : (
+                      <span className="text-gray-400">N/A</span>
+                    )}
+                  </td>
+
+                  {/* Cancel Button */}
+                  <td>
+                    <button
+                      className="btn btn-sm btn-error text-white"
+                      disabled={camp.paymentStatus === "paid"}
+                      onClick={() =>
+                        handleCancel(camp._id, camp.campId, camp.paymentStatus === "paid")
+                      }
+                    >
+                      Cancel
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
-
-        {/* ✅ No camp message */}
-        {camps.length === 0 && (
-          <p className="text-center mt-4 text-gray-500">You haven't registered for any camp yet.</p>
-        )}
       </div>
     </div>
   );
