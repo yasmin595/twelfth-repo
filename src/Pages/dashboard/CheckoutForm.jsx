@@ -5,8 +5,10 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { useState } from "react";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
+import { useNavigate } from "react-router";
 
 const CheckoutForm = ({ camp }) => {
+   const navigate = useNavigate();
   const stripe = useStripe();
   const elements = useElements();
   const axiosSecure = useAxiosSecure();
@@ -68,6 +70,7 @@ const CheckoutForm = ({ camp }) => {
         await axiosSecure.post("/payments", paymentInfo);
 
         toast.success("✅ Payment successful!");
+           navigate("/dashboard/participant/registered-camps");
         reset();
       }
     } catch (err) {

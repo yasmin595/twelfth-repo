@@ -28,7 +28,7 @@ const FeedbackForm = () => {
       await axiosSecure.post("/feedback", feedback);
       toast.success("✅ Feedback submitted successfully!");
       reset();
-      navigate("/dashboard/registered-camps");
+      navigate("/dashboard/participant/registered-camps");
     } catch (error) {
       toast.error("❌ Failed to submit feedback");
       console.error("Feedback error:", error);

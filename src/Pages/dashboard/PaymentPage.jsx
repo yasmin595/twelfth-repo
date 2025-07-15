@@ -42,7 +42,7 @@ const PaymentPage = () => {
     <div className="max-w-xl mx-auto p-6">
       <h2 className="text-2xl font-semibold mb-4 text-green-700">💳 Complete Payment</h2>
 
-      <div className="bg-white border p-4 rounded shadow-sm mb-6">
+      <div className="bg-white border border-green-300 p-4 rounded shadow-sm mb-6">
         <p><strong>Camp:</strong> {camp.campName}</p>
         <p><strong>Doctor:</strong> {camp.doctor}</p>
         <p><strong>Location:</strong> {camp.location}</p>

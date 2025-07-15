@@ -1,15 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import useAuth from "../../hooks/useAuth";
 import Swal from "sweetalert2";
 import { Link } from "react-router";
+import Pagination from "../shared/Pagination";
+import SearchBar from "../shared/SearchBar";
+
 
 const RegisteredCamps = () => {
   const axiosSecure = useAxiosSecure();
   const { user } = useAuth();
 
-  // Fetch registered camps for the logged-in user
   const { data: camps = [], refetch, isLoading } = useQuery({
     queryKey: ["registeredCamps", user?.email],
     enabled: !!user?.email,
@@ -19,41 +21,53 @@ const RegisteredCamps = () => {
     },
   });
 
-  // Handle cancel registration
- const handleCancel = async (participantId, campId, isPaid) => {
-  if (isPaid) return;
+  // Pagination and Search states
+  const [searchText, setSearchText] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 10;
 
-  const confirm = await Swal.fire({
-    title: "Are you sure?",
-    text: "You want to cancel your registration!",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonText: "Yes, cancel it!",
-  });
+  const filteredCamps = camps.filter((camp) =>
+    `${camp.campName} ${camp.date} ${camp.doctor}`.toLowerCase().includes(searchText.toLowerCase())
+  );
 
-  if (confirm.isConfirmed) {
-    try {
-     
-      await axiosSecure.delete(`/registered-camp/${participantId}`);
+  const totalPages = Math.ceil(filteredCamps.length / rowsPerPage);
+  const paginatedCamps = filteredCamps.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
 
-   await axiosSecure.patch(`/camps/${campId}/decrease`);
+  const handleCancel = async (participantId, campId, isPaid) => {
+    if (isPaid) return;
 
+    const confirm = await Swal.fire({
+      title: "Are you sure?",
+      text: "You want to cancel your registration!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, cancel it!",
+    });
 
-      Swal.fire("Cancelled!", "Your registration has been removed.", "success");
-      refetch();
-    } catch (error) {
-      console.error("Error during cancel:", error);
-      Swal.fire("Error", "Something went wrong. Please try again.", "error");
+    if (confirm.isConfirmed) {
+      try {
+        await axiosSecure.delete(`/registered-camp/${participantId}`);
+        await axiosSecure.patch(`/camps/${campId}/decrease`);
+
+        Swal.fire("Cancelled!", "Your registration has been removed.", "success");
+        refetch();
+      } catch (error) {
+        console.error("Error during cancel:", error);
+        Swal.fire("Error", "Something went wrong. Please try again.", "error");
+      }
     }
-  }
-};
-
+  };
 
   if (isLoading) return <p className="text-center">Loading registered camps...</p>;
 
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-4 text-green-700">Registered Camps</h2>
+
+      <SearchBar value={searchText} onChange={setSearchText} />
 
       <div className="overflow-x-auto">
         <table className="table">
@@ -69,20 +83,19 @@ const RegisteredCamps = () => {
             </tr>
           </thead>
           <tbody>
-            {camps.length === 0 ? (
+            {paginatedCamps.length === 0 ? (
               <tr>
                 <td colSpan="7" className="text-center text-gray-500 py-4">
-                  You haven't registered for any camp yet.
+                  No matching camps found.
                 </td>
               </tr>
             ) : (
-              camps.map((camp, index) => (
+              paginatedCamps.map((camp, index) => (
                 <tr key={camp._id} className="hover">
-                  <td>{index + 1}</td>
+                  <td>{(currentPage - 1) * rowsPerPage + index + 1}</td>
                   <td>{camp.campName}</td>
                   <td>${camp.campFees}</td>
 
-                  {/* Payment Status */}
                   <td>
                     {camp.paymentStatus === "paid" ? (
                       <span className="text-green-600 font-semibold">Paid</span>
@@ -96,7 +109,6 @@ const RegisteredCamps = () => {
                     )}
                   </td>
 
-                  {/* Confirmation Status */}
                   <td>
                     {camp.confirmationStatus === "confirmed" ? (
                       <span className="text-green-500">Confirmed</span>
@@ -105,7 +117,6 @@ const RegisteredCamps = () => {
                     )}
                   </td>
 
-                  {/* Feedback */}
                   <td>
                     {camp.paymentStatus === "paid" ? (
                       <Link
@@ -119,7 +130,6 @@ const RegisteredCamps = () => {
                     )}
                   </td>
 
-                  {/* Cancel Button */}
                   <td>
                     <button
                       className="btn btn-sm btn-error text-white"
@@ -137,6 +147,12 @@ const RegisteredCamps = () => {
           </tbody>
         </table>
       </div>
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 };
