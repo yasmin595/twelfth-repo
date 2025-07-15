@@ -150,7 +150,7 @@ const Register = () => {
         {/* Redirect to Login */}
         <p className="mt-6 text-center text-gray-600">
           Already have an account?{' '}
-          <Link to="/login" className="text-green-700 font-semibold hover:underline">
+          <Link to="/auth/login" className="text-green-700 font-semibold hover:underline">
             Login
           </Link>
         </p>
