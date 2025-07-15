@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import Swal from "sweetalert2";
 
-
 const ManageRegistered = () => {
   const axiosSecure = useAxiosSecure();
 
@@ -16,13 +15,18 @@ const ManageRegistered = () => {
   });
 
   const handleConfirm = async (id) => {
-    await axiosSecure.patch(`/confirm-registration/${id}`);
-    Swal.fire("Confirmed!", "Participant confirmed successfully.", "success");
-    refetch();
+    try {
+      await axiosSecure.patch(`/confirm-registration/${id}`);
+      Swal.fire("Confirmed!", "Participant confirmed successfully.", "success");
+      refetch();
+    } catch (error) {
+      Swal.fire("Error", "Failed to confirm registration.", "error");
+    }
   };
 
-  const handleCancel = async (id, isPaid, isConfirmed) => {
+  const handleCancel = async (participantId, isPaid, isConfirmed, campId) => {
     if (isPaid && isConfirmed) return;
+
     const confirm = await Swal.fire({
       title: "Are you sure?",
       text: "You want to cancel this registration!",
@@ -32,9 +36,15 @@ const ManageRegistered = () => {
     });
 
     if (confirm.isConfirmed) {
-      await axiosSecure.delete(`/cancel-camp/${id}`);
-      Swal.fire("Cancelled!", "Registration has been removed.", "success");
-      refetch();
+      try {
+        await axiosSecure.delete(`/cancel-camp/${participantId}`);
+        await axiosSecure.patch(`/camps/${campId}/decrease`);
+        Swal.fire("Cancelled!", "Registration has been removed.", "success");
+        refetch();
+      } catch (error) {
+        console.error("Cancellation error:", error);
+        Swal.fire("Error", "Something went wrong during cancellation.", "error");
+      }
     }
   };
 
@@ -78,7 +88,7 @@ const ManageRegistered = () => {
                       className="btn btn-sm btn-success"
                       onClick={() => handleConfirm(reg._id)}
                     >
-                      Pending
+                      Confirm
                     </button>
                   ) : (
                     <span className="text-gray-500">Waiting</span>
@@ -88,11 +98,14 @@ const ManageRegistered = () => {
                   <button
                     className="btn btn-sm btn-error text-white"
                     disabled={reg.paymentStatus === "paid" && reg.confirmationStatus === "confirmed"}
-                    onClick={() => handleCancel(
-                      reg._id,
-                      reg.paymentStatus === "paid",
-                      reg.confirmationStatus === "confirmed"
-                    )}
+                    onClick={() =>
+                      handleCancel(
+                        reg._id,
+                        reg.paymentStatus === "paid",
+                        reg.confirmationStatus === "confirmed",
+                        reg.campId
+                      )
+                    }
                   >
                     Cancel
                   </button>
