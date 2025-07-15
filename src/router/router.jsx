@@ -21,6 +21,7 @@ import FeedbackForm from "../Pages/dashboard/FeedbackForm";
 import ManageRegistered from "../Pages/dashboard/ManageRegistered";
 import OrganizerProfile from "../Pages/dashboard/OrganizerProfile";
 import Analytics from "../Pages/dashboard/Analytics";
+import ParticipantProfile from "../Pages/dashboard/ParticipantProfile";
 
 
 
@@ -93,6 +94,10 @@ export     const router = createBrowserRouter([
       {
         path:"/dashboard/participant/analytics",
         element:<Analytics></Analytics>
+      },
+      {
+        path:"/dashboard/participant/profile",
+        element:<ParticipantProfile></ParticipantProfile>
       },
       {
         path:"/dashboard/participant/feedback/:id",

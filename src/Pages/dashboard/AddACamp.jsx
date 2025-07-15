@@ -96,104 +96,126 @@ const AddACamp = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto bg-white shadow-lg rounded-xl p-8 my-10">
-      <h2 className="text-3xl font-bold text-green-700 mb-6 text-center">Add New Camp</h2>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="grid grid-cols-1 md:grid-cols-2 gap-6"
-      >
-        <div>
-          <label>Camp Name</label>
-          <input
-            {...register("name", { required: true })}
-            className="input input-bordered w-full"
-          />
-          {errors.name && (
-            <p className="text-red-600 text-sm">Required</p>
-          )}
-        </div>
 
-        <div>
-          <label>Upload Camp Image</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
-            className="file-input file-input-bordered w-full"
-          />
-          {imageUrl && (
-            <img
-              src={imageUrl}
-              alt="Uploaded Preview"
-              className="mt-2 w-24 h-24 object-cover rounded border mx-auto"
-            />
-          )}
-        </div>
 
-        <div>
-          <label>Camp Fees</label>
-          <input
-            type="number"
-            {...register("fees", { required: true })}
-            className="input input-bordered w-full"
-          />
-        </div>
+<div className="max-w-4xl mx-auto bg-gradient-to-br from-green-50 via-yellow-50 to-blue-100 shadow-xl rounded-3xl p-10 my-12 border border-green-300 animate-fade-in">
+  <h2 className="text-4xl font-extrabold text-green-800 mb-8 text-center tracking-wide uppercase">
+    Add A New <span className="text-yellow-600">Medical Camp</span>
+  </h2>
 
-        <div>
-          <label>Date</label>
-          <DatePicker
-            selected={date}
-            onChange={(d) => setDate(d)}
-            className="input input-bordered w-full"
-          />
-        </div>
-
-        <div>
-          <label>Time</label>
-          <input
-            type="time"
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
-            className="input input-bordered w-full"
-          />
-        </div>
-
-        <div>
-          <label>Location</label>
-          <input
-            {...register("location", { required: true })}
-            className="input input-bordered w-full"
-          />
-        </div>
-
-        <div className="md:col-span-2">
-          <label>Healthcare Professional</label>
-          <input
-            {...register("doctor", { required: true })}
-            className="input input-bordered w-full"
-          />
-        </div>
-
-        <div className="md:col-span-2">
-          <label>Description</label>
-          <textarea
-            {...register("description", { required: true })}
-            className="textarea textarea-bordered w-full"
-            rows={4}
-          ></textarea>
-        </div>
-
-        <div className="md:col-span-2 text-center">
-          <button
-            type="submit"
-            className="btn bg-green-700 text-white hover:bg-green-800 px-10"
-            disabled={uploading}
-          >
-            {uploading ? "Uploading..." : "Add Camp"}
-          </button>
-        </div>
-      </form>
+  <form
+    onSubmit={handleSubmit(onSubmit)}
+    className="grid grid-cols-1 md:grid-cols-2 gap-8"
+  >
+    {/* Camp Name */}
+    <div className="form-group">
+      <label className="text-green-900 font-semibold mb-1 block">Camp Name</label>
+      <input
+        {...register("name", { required: true })}
+        className="input input-bordered w-full border-green-400 focus:border-green-600"
+        placeholder="e.g., Free Eye Camp in Dhaka"
+      />
+      {errors.name && <p className="text-sm text-red-600 mt-1">Required</p>}
     </div>
+
+    {/* Upload Image */}
+    <div className="form-group">
+      <label className="text-green-900 font-semibold mb-1 block">Upload Image</label>
+      <input
+        type="file"
+        accept="image/*"
+        onChange={handleImageUpload}
+        className="file-input file-input-bordered w-full border-green-400"
+      />
+      {imageUrl && (
+        <img
+          src={imageUrl}
+          alt="Uploaded Preview"
+          className="mt-2 w-24 h-24 rounded-md object-cover border mx-auto"
+        />
+      )}
+    </div>
+
+    {/* Fees */}
+    <div className="form-group">
+      <label className="text-green-900 font-semibold mb-1 block">Camp Fees</label>
+      <input
+        type="number"
+        {...register("fees", { required: true })}
+        className="input input-bordered w-full border-green-400"
+        placeholder="e.g., 200"
+      />
+    </div>
+
+    {/* Date */}
+    <div className="form-group">
+      <label className="text-green-900 font-semibold mb-1 block">Date</label>
+      <DatePicker
+        selected={date}
+        onChange={(d) => setDate(d)}
+        className="input input-bordered w-full border-green-400"
+      />
+    </div>
+
+    {/* Time */}
+    <div className="form-group">
+      <label className="text-green-900 font-semibold mb-1 block">Time</label>
+      <input
+        type="time"
+        value={time}
+        onChange={(e) => setTime(e.target.value)}
+        className="input input-bordered w-full border-green-400"
+      />
+    </div>
+
+    {/* Location */}
+    <div className="form-group">
+      <label className="text-green-900 font-semibold mb-1 block">Location</label>
+      <input
+        {...register("location", { required: true })}
+        className="input input-bordered w-full border-green-400"
+        placeholder="e.g., Bashundhara, Dhaka"
+      />
+    </div>
+
+    {/* Doctor */}
+    <div className="md:col-span-2">
+      <label className="text-green-900 font-semibold mb-1 block">Healthcare Professional</label>
+      <input
+        {...register("doctor", { required: true })}
+        className="input input-bordered w-full border-green-400"
+        placeholder="e.g., Dr. Salma Akter (MBBS)"
+      />
+    </div>
+
+    {/* Description */}
+    <div className="md:col-span-2">
+      <label className="text-green-900 font-semibold mb-1 block">Description</label>
+      <textarea
+        {...register("description", { required: true })}
+        className="textarea textarea-bordered w-full border-green-400"
+        rows={4}
+        placeholder="Write short details about this camp..."
+      ></textarea>
+    </div>
+
+    {/* Submit Button */}
+    <div className="md:col-span-2 text-center mt-4">
+      <button
+        type="submit"
+        disabled={uploading}
+        className={`btn px-10 py-2 rounded-full font-semibold text-white text-lg shadow-lg transition-all duration-300 ${
+          uploading
+            ? "bg-gray-400 cursor-not-allowed"
+            : "bg-green-600 hover:bg-green-700"
+        }`}
+      >
+        {uploading ? "Uploading..." : "Add Camp"}
+      </button>
+    </div>
+  </form>
+</div>
+
   );
 };
 

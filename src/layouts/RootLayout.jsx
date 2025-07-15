@@ -4,6 +4,7 @@ import { Outlet, useNavigation } from 'react-router';
 import Loading from '../Pages/shared/Loading';
 import Footer from '../Pages/shared/Footer';
 
+
 const RootLayout = () => {
     
       const {state } = useNavigation();
@@ -11,7 +12,8 @@ const RootLayout = () => {
           <div>
          
          <Navbar></Navbar>
-               <div className='max-w-11/12 mx-auto min-h-screen'>
+
+                      <div className='max-w-11/12 mx-auto min-h-screen'>
                {state == "loading"? <Loading></Loading> : <Outlet></Outlet> } 
          </div>
             <Footer></Footer>
