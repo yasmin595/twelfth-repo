@@ -26,6 +26,7 @@ import FeedbackSection from "../Pages/FeedbackCollection";
 import ErrorPage from "../Pages/shared/ErrorPage";
 import AdminRoute from "../provider/AdminRoute";
 import ParticipantRoute from "../provider/ParticipantRoute";
+import UserRoute from "../provider/UserRoute";
 
 
 
@@ -93,9 +94,7 @@ export     const router = createBrowserRouter([
    {
 
         path:"/dashboard/user/details-camp/:campId",
-        element:<PrivateRoute>
-          <CampDetails></CampDetails>
-        </PrivateRoute>,
+        element:<UserRoute> <CampDetails></CampDetails></UserRoute>,
         
       
       },
