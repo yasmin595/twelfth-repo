@@ -11,7 +11,7 @@ import {
 } from "firebase/auth";
 import { AuthContext } from "./AuthContext";
 import app  from "../firebase/firebase.init";
-import axios from "axios";
+
 // import App from "../App";
 // import app from "../firebase/firebase.init";
 // import { AuthContext } from "./AuthContext";
@@ -50,21 +50,8 @@ useEffect(() => {
     setUser(currentUser);
     setLoading(false);
 
-    // 🔐 If user is logged in, request JWT and store
-    if (currentUser?.email) {
-      const userData = { email: currentUser.email };
-
-      try {
-        const res = await axios.post("http://localhost:5000/jwt", userData);
-        const token = res.data.token;
-        localStorage.setItem("access-token", token);
-      } catch (error) {
-        console.error("JWT fetch error:", error);
-      }
-    } else {
-      // ❌ If logged out, remove token
-      localStorage.removeItem("access-token");
-    }
+  
+ 
   });
 
   return () => {
