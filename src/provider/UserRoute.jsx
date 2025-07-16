@@ -1,27 +1,24 @@
-import React from "react";
-import { Navigate, Outlet } from "react-router";
+import { Navigate, useLocation } from "react-router";
+// import useAuth from "../hooks/useAuth";
+// import useUserRole from "../hooks/useUserRole";
+import Loading from "../Pages/shared/Loading";
+import useUserRole from "../hooks/useUserRole";
 import useAuth from "../hooks/useAuth";
 
+const UserRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+  const { role, isRoleLoading } = useUserRole();
+  const location = useLocation();
 
-const UserRoute = () => {
-  const { user, loading, userData } = useAuth(); 
-
-
-  if (loading) {
-    return <p>Loading...</p>; 
+  if (loading || isRoleLoading) {
+    return <Loading />;
   }
 
- 
-  if (!user) {
-    return <Navigate to="/login" replace />;
+  if (user && (role === "user" || role === "participant")) {
+    return children;
   }
 
- 
-  if (userData?.role === "participant" || userData?.role === "user") {
-    return <Outlet />;  
-  }
-
-  return <Navigate to="/" replace />;
+  return <Navigate to="/" state={{ from: location }} replace />;
 };
 
 export default UserRoute;
