@@ -23,6 +23,7 @@ import OrganizerProfile from "../Pages/dashboard/OrganizerProfile";
 import Analytics from "../Pages/dashboard/Analytics";
 import ParticipantProfile from "../Pages/dashboard/ParticipantProfile";
 import FeedbackSection from "../Pages/FeedbackCollection";
+import ErrorPage from "../Pages/shared/ErrorPage";
 
 
 
@@ -43,6 +44,11 @@ export     const router = createBrowserRouter([
       path:"/feedback",
       element:<FeedbackSection></FeedbackSection>
     },
+       {
+      path:'/*',
+      element:<ErrorPage></ErrorPage>
+
+        },
     ]
   },
 
@@ -121,7 +127,12 @@ export     const router = createBrowserRouter([
 path:"/dashboard/payment/:id",
 element:<PaymentPage></PaymentPage>,
 
-  }
+  },
+     {
+      path:'/dashboard/*',
+      element:<ErrorPage></ErrorPage>
+
+        },
 
     ]
   },
@@ -138,7 +149,18 @@ element:<PaymentPage></PaymentPage>,
       {
         path:"/auth/register",
         element:<Register></Register>,
-      }
+      },
+         {
+      path:'/auth/*',
+      element:<ErrorPage></ErrorPage>
+
+        },
     ]
+  },{
+       
+      path:'/*',
+      element:<ErrorPage></ErrorPage>
+
+        
   }
 ]);
