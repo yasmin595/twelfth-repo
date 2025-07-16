@@ -13,30 +13,40 @@ const SocialLogIn = () => {
   const axiosInstance = useAxios();
   const from = location.state?.from || '/';
 
-  const handleGoogleSign = async () => {
-    try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
+const handleGoogleSign = async () => {
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
 
-      // Prepare user info for backend
-      const userInfo = {
-        email: user.email,
-        role: 'user', // default role
-        photoURL: user.photoURL,
-        created_at: new Date().toISOString(),
-        last_log_in: new Date().toISOString()
-      };
+    const userInfo = {
+      email: user.email,
+      role: 'user',
+      photoURL: user.photoURL,
+      created_at: new Date().toISOString(),
+      last_log_in: new Date().toISOString()
+    };
 
-      // Save or update user in your backend
+    // 1️⃣ Check if user already exists
+    const { data } = await axiosInstance.get(`/users/${user.email}`);
+
+    if (!data?._id) {
+      // 2️⃣ If not found, create user
       await axiosInstance.post('/users', userInfo);
-
-      toast.success("You successfully logged in with Google!");
-      navigate(from);
-    } catch (error) {
-      console.error("Google Sign-in Error:", error);
-      toast.error("Google login failed. Try again.");
+    } else {
+      // 3️⃣ Optional: Update login time
+      await axiosInstance.patch(`/users/${user.email}`, {
+        last_log_in: new Date().toISOString()
+      });
     }
-  };
+
+    toast.success("You successfully logged in with Google!");
+    navigate(from);
+
+  } catch (error) {
+    console.error("Google Sign-in Error:", error);
+    toast.error("Google login failed. Try again.");
+  }
+};
 
   return (
     <div className="text-center mt-4">
