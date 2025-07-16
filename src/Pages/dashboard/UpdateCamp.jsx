@@ -5,9 +5,11 @@ import DatePicker from "react-datepicker";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
 import "react-datepicker/dist/react-datepicker.css";
-
 import { useQuery } from "@tanstack/react-query";
-import useAxiosSecure from "../../hooks/useAxiosSecure"; // তোমার Axios instance
+import useAxiosSecure from "../../hooks/useAxiosSecure";
+import axios from "axios";
+
+const imageHostKey = import.meta.env.VITE_image_upload_key;
 
 const UpdateCamp = () => {
   const { campId } = useParams();
@@ -16,24 +18,16 @@ const UpdateCamp = () => {
 
   const [date, setDate] = useState(null);
   const [time, setTime] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+  const [uploading, setUploading] = useState(false);
 
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm({
-    defaultValues: {
-      name: "",
-      image: "",
-      fees: "",
-      location: "",
-      doctor: "",
-      description: "",
-    },
-  });
+  } = useForm();
 
-  // Fetch camp data by ID with TanStack Query (v5 style)
   const { data: campData, isLoading, isError } = useQuery({
     queryKey: ["camp", campId],
     queryFn: async () => {
@@ -43,27 +37,53 @@ const UpdateCamp = () => {
     enabled: !!campId,
   });
 
-  // যখন ডাটা আসবে তখন ফর্ম রিসেট করো + কন্ট্রোলড ফিল্ড সেট করো
   useEffect(() => {
     if (campData) {
       reset({
         name: campData.name || "",
-        image: campData.image || "",
         fees: campData.fees || "",
         location: campData.location || "",
         doctor: campData.doctor || "",
         description: campData.description || "",
       });
-
       setDate(campData.date ? new Date(campData.date) : null);
       setTime(campData.time || "");
+      setImageUrl(campData.image || "");
     }
   }, [campData, reset]);
 
+  const handleImageUpload = async (e) => {
+    const imageFile = e.target.files[0];
+    if (!imageFile) return;
+
+    const formData = new FormData();
+    formData.append("image", imageFile);
+
+    try {
+      setUploading(true);
+      const res = await axios.post(
+        `https://api.imgbb.com/1/upload?key=${imageHostKey}`,
+        formData
+      );
+      const imgData = res.data;
+      if (imgData.success) {
+        setImageUrl(imgData.data.url);
+        toast.success("✅ Image uploaded successfully!");
+      } else {
+        throw new Error("Image upload failed");
+      }
+    } catch (error) {
+      console.error("Image Upload Error:", error);
+      toast.error("❌ Image upload failed.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const onSubmit = async (data) => {
-    // Prepare আপডেটেড ডাটা
     const updatedCamp = {
       ...data,
+      image: imageUrl,
       fees: parseFloat(data.fees),
       date: date ? date.toISOString().split("T")[0] : "",
       time,
@@ -75,105 +95,81 @@ const UpdateCamp = () => {
         Swal.fire("✅ Updated!", "Camp updated successfully!", "success");
         navigate("/dashboard/organizer/manage-camps");
       } else {
-        toast.info("No changes were made.");
+        toast.info("ℹ️ No changes were made.");
       }
     } catch (error) {
       console.error("Update failed:", error);
-      toast.error("Failed to update camp.", { position: "top-center" });
+      toast.error("❌ Failed to update camp.", { position: "top-center" });
     }
   };
 
-  if (isLoading) return <div>Loading camp data...</div>;
-  if (isError) return <div>Error loading camp data.</div>;
+  if (isLoading) return <div className="text-center py-10 text-gray-500">Loading camp data...</div>;
+  if (isError) return <div className="text-center py-10 text-red-600">Error loading camp data.</div>;
 
   return (
-    <div className="max-w-3xl mx-auto bg-white shadow-lg rounded-xl p-8 my-10">
-      <h2 className="text-3xl font-bold text-green-700 mb-6 text-center">Update Camp</h2>
+    <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg px-8 py-10 my-10">
+      <h2 className="text-3xl font-bold text-center text-green-700 mb-6">
+        Update Medical Camp
+      </h2>
+
       <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        {/* Camp Name */}
         <div>
-          <label>Camp Name</label>
-          <input
-            {...register("name", { required: "Camp name is required" })}
-            className="input input-bordered w-full"
-          />
-          {errors.name && <p className="text-red-600 text-sm">{errors.name.message}</p>}
+          <label className="block mb-1">Camp Name</label>
+          <input {...register("name", { required: true })} className="input input-bordered w-full" />
+          {errors.name && <p className="text-sm text-red-600">Required</p>}
         </div>
 
+        {/* Image Upload */}
         <div>
-          <label>Image URL</label>
-          <input
-            {...register("image", { required: "Image URL is required" })}
-            className="input input-bordered w-full"
-          />
-          {errors.image && <p className="text-red-600 text-sm">{errors.image.message}</p>}
+          <label className="block mb-1">Upload New Image</label>
+          <input type="file" accept="image/*" onChange={handleImageUpload} className="file-input file-input-bordered w-full" />
+          {imageUrl && (
+            <img src={imageUrl} alt="Uploaded" className="mt-2 w-24 h-24 object-cover rounded border mx-auto" />
+          )}
         </div>
 
+        {/* Fees */}
         <div>
-          <label>Camp Fees</label>
-          <input
-            type="number"
-            {...register("fees", { required: "Fees is required", min: 0 })}
-            className="input input-bordered w-full"
-          />
-          {errors.fees && <p className="text-red-600 text-sm">{errors.fees.message}</p>}
+          <label className="block mb-1">Camp Fees ($)</label>
+          <input type="number" {...register("fees", { required: true })} className="input input-bordered w-full" />
         </div>
 
+        {/* Date */}
         <div>
-          <label>Date</label>
-          <DatePicker
-            selected={date}
-            onChange={setDate}
-            className="input input-bordered w-full"
-            placeholderText="Select a date"
-            required
-          />
+          <label className="block mb-1">Date</label>
+          <DatePicker selected={date} onChange={setDate} className="input input-bordered w-full" />
         </div>
 
+        {/* Time */}
         <div>
-          <label>Time</label>
-          <input
-            type="time"
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
-            className="input input-bordered w-full"
-            required
-          />
+          <label className="block mb-1">Time</label>
+          <input type="time" value={time} onChange={(e) => setTime(e.target.value)} className="input input-bordered w-full" />
         </div>
 
+        {/* Location */}
         <div>
-          <label>Location</label>
-          <input
-            {...register("location", { required: "Location is required" })}
-            className="input input-bordered w-full"
-          />
-          {errors.location && <p className="text-red-600 text-sm">{errors.location.message}</p>}
+          <label className="block mb-1">Location</label>
+          <input {...register("location", { required: true })} className="input input-bordered w-full" />
         </div>
 
+        {/* Doctor */}
         <div className="md:col-span-2">
-          <label>Healthcare Professional</label>
-          <input
-            {...register("doctor", { required: "Doctor name is required" })}
-            className="input input-bordered w-full"
-          />
-          {errors.doctor && <p className="text-red-600 text-sm">{errors.doctor.message}</p>}
+          <label className="block mb-1">Doctor/Health Expert</label>
+          <input {...register("doctor", { required: true })} className="input input-bordered w-full" />
         </div>
 
+        {/* Description */}
         <div className="md:col-span-2">
-          <label>Description</label>
-          <textarea
-            {...register("description", { required: "Description is required" })}
-            className="textarea textarea-bordered w-full"
-            rows={4}
-          />
-          {errors.description && <p className="text-red-600 text-sm">{errors.description.message}</p>}
+          <label className="block mb-1">Description</label>
+          <textarea {...register("description", { required: true })} className="textarea textarea-bordered w-full" rows={4}></textarea>
         </div>
 
-        <div className="md:col-span-2 text-center">
-          <button
-            type="submit"
-            className="btn bg-green-700 text-white hover:bg-green-800 px-10"
-          >
-            Update Camp
+        {/* Submit */}
+        <div className="md:col-span-2 text-center mt-4">
+          <button type="submit" className="btn bg-green-700 hover:bg-green-800 text-white px-8" disabled={uploading}>
+            {uploading ? "Uploading Image..." : "Update Camp"}
           </button>
         </div>
       </form>

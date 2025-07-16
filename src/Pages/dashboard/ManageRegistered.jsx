@@ -1,10 +1,15 @@
-import React from "react";
+import React, { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import Swal from "sweetalert2";
+import SearchBar from "../shared/SearchBar";
+import Pagination from "../shared/Pagination";
 
 const ManageRegistered = () => {
   const axiosSecure = useAxiosSecure();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
 
   const { data: registrations = [], refetch, isLoading } = useQuery({
     queryKey: ["allRegistrations"],
@@ -14,11 +19,9 @@ const ManageRegistered = () => {
     },
   });
 
-  const handleConfirm = async (registrationId, participantEmail) => {
+  const handleConfirm = async (registrationId) => {
     try {
       await axiosSecure.patch(`/confirm-registration/${registrationId}`);
-      await axiosSecure.patch(`/users/participant/${participantEmail}`);
-
       Swal.fire("Confirmed!", "Participant confirmed successfully.", "success");
       refetch();
     } catch (error) {
@@ -51,14 +54,35 @@ const ManageRegistered = () => {
     }
   };
 
+  const filteredRegistrations = useMemo(() => {
+    return registrations.filter((reg) =>
+      reg?.participantName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      reg?.campName?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [registrations, searchTerm]);
+
+  const totalPages = Math.ceil(filteredRegistrations.length / itemsPerPage);
+  const paginatedData = filteredRegistrations.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   return (
     <div className="p-4 md:p-6">
-      <h2 className="text-3xl font-bold text-green-700 mb-4 text-center">
+      <h2 className="text-3xl font-bold text-green-700 mb-6 text-center">
         Manage Registered Camps
       </h2>
 
+      <div className="mb-4 max-w-sm mx-auto">
+        <SearchBar
+          value={searchTerm}
+          onChange={setSearchTerm}
+          placeholder="Search by name or camp..."
+        />
+      </div>
+
       <div className="overflow-x-auto bg-white shadow rounded-xl">
-        <table className="table table-zebra w-full">
+        <table className="table table-zebra w-full text-sm">
           <thead className="bg-green-200 text-green-900">
             <tr>
               <th>#</th>
@@ -71,18 +95,18 @@ const ManageRegistered = () => {
             </tr>
           </thead>
           <tbody>
-            {registrations.length === 0 ? (
+            {paginatedData.length === 0 ? (
               <tr>
                 <td colSpan="7" className="text-center py-6 text-gray-500">
                   No registrations found.
                 </td>
               </tr>
             ) : (
-              registrations.map((reg, index) => (
-                <tr key={reg._id} className="hover">
-                  <td>{index + 1}</td>
-                  <td className="font-semibold">{reg.campName}</td>
-                  <td className="text-green-700 font-medium">${reg.campFees}</td>
+              paginatedData.map((reg, index) => (
+                <tr key={reg._id}>
+                  <td>{(currentPage - 1) * itemsPerPage + index + 1}</td>
+                  <td className="font-medium">{reg.campName}</td>
+                  <td className="text-green-700 font-semibold">${reg.campFees}</td>
                   <td>{reg.participantName}</td>
                   <td>
                     {reg.paymentStatus === "paid" ? (
@@ -97,7 +121,7 @@ const ManageRegistered = () => {
                     ) : reg.paymentStatus === "paid" ? (
                       <button
                         className="btn btn-xs md:btn-sm bg-green-600 hover:bg-green-700 text-white"
-                        onClick={() => handleConfirm(reg._id, reg.participantEmail)}
+                        onClick={() => handleConfirm(reg._id)}
                       >
                         Confirm
                       </button>
@@ -127,6 +151,16 @@ const ManageRegistered = () => {
           </tbody>
         </table>
       </div>
+
+      {totalPages > 1 && (
+        <div className="mt-6">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={(page) => setCurrentPage(page)}
+          />
+        </div>
+      )}
     </div>
   );
 };

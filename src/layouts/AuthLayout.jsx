@@ -5,7 +5,7 @@ const AuthLayout = () => {
     return (
         <div>
             <header></header>
-            <main>
+            <main className='w-11/12'>
                 <Outlet></Outlet>
                 </main>
             <footer></footer>

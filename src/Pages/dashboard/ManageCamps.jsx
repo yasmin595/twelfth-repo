@@ -5,9 +5,9 @@ import Swal from "sweetalert2";
 import { Link } from "react-router";
 import useAuth from "../../hooks/useAuth";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
-
 import SearchBar from "../shared/SearchBar";
 import Pagination from "../shared/Pagination";
+
 
 const ManageCamps = () => {
   const { user } = useAuth();
@@ -56,7 +56,6 @@ const ManageCamps = () => {
     });
   };
 
-  // 🔍 Filter camps by name/location/doctor
   const filteredCamps = useMemo(() => {
     return camps.filter((camp) =>
       `${camp.name} ${camp.location} ${camp.doctor}`
@@ -65,7 +64,6 @@ const ManageCamps = () => {
     );
   }, [camps, searchTerm]);
 
-  // 📄 Pagination logic
   const totalPages = Math.ceil(filteredCamps.length / campsPerPage);
   const paginatedCamps = filteredCamps.slice(
     (currentPage - 1) * campsPerPage,
@@ -74,16 +72,24 @@ const ManageCamps = () => {
 
   return (
     <div className="p-4 md:p-8">
-      <h2 className="text-3xl font-bold text-green-800 mb-6 text-center">Manage My Camps</h2>
+      <h2 className="text-3xl font-bold text-green-700 mb-6 text-center">
+        Manage My Camps
+      </h2>
 
-      <SearchBar value={searchTerm} onChange={setSearchTerm} placeholder="Search by name, doctor, location" />
+      <div className="max-w-md mx-auto mb-6">
+        <SearchBar
+          value={searchTerm}
+          onChange={setSearchTerm}
+          placeholder="Search by camp name, doctor, or location"
+        />
+      </div>
 
       {isLoading ? (
-        <p className="text-center text-gray-600">Loading camps...</p>
+        <p className="text-center text-gray-500">Loading camps...</p>
       ) : (
-        <div className="overflow-x-auto bg-white shadow-md rounded-xl p-4">
-          <table className="table w-full">
-            <thead className="bg-green-100 text-green-800 font-semibold text-sm">
+        <div className="bg-white shadow-lg rounded-xl overflow-x-auto">
+          <table className="table w-full text-sm">
+            <thead className="bg-green-100 text-green-800 text-sm">
               <tr>
                 <th>#</th>
                 <th>Camp Name</th>
@@ -102,24 +108,26 @@ const ManageCamps = () => {
                 </tr>
               ) : (
                 paginatedCamps.map((camp, index) => (
-                  <tr key={camp._id} className="hover">
+                  <tr key={camp._id} className="hover:bg-gray-50 transition">
                     <td>{(currentPage - 1) * campsPerPage + index + 1}</td>
-                    <td>{camp.name}</td>
+                    <td className="font-semibold text-gray-800">{camp.name}</td>
                     <td>{camp.date} at {camp.time}</td>
                     <td>{camp.location}</td>
                     <td>{camp.doctor}</td>
-                    <td className="flex flex-wrap justify-center gap-2">
-                      <Link to={`/dashboard/organizer/update-camp/${camp._id}`}>
-                        <button className="btn btn-xs bg-blue-600 hover:bg-blue-700 text-white">
-                          <FaEdit /> Edit
+                    <td>
+                      <div className="flex justify-center gap-2 flex-wrap">
+                        <Link to={`/dashboard/organizer/update-camp/${camp._id}`}>
+                          <button className="btn btn-sm bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-1">
+                            <FaEdit /> Edit
+                          </button>
+                        </Link>
+                        <button
+                          onClick={() => handleDelete(camp._id)}
+                          className="btn btn-sm bg-red-600 hover:bg-red-700 text-white flex items-center gap-1"
+                        >
+                          <FaTrash /> Delete
                         </button>
-                      </Link>
-                      <button
-                        onClick={() => handleDelete(camp._id)}
-                        className="btn btn-xs bg-red-600 hover:bg-red-700 text-white"
-                      >
-                        <FaTrash /> Delete
-                      </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -127,11 +135,16 @@ const ManageCamps = () => {
             </tbody>
           </table>
 
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={(page) => setCurrentPage(page)}
-          />
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="mt-6">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={(page) => setCurrentPage(page)}
+              />
+            </div>
+          )}
         </div>
       )}
     </div>

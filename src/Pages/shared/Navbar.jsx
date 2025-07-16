@@ -27,6 +27,9 @@ const Navbar = () => {
       <li>
         <NavLink to="/available-camps" className={({ isActive }) => isActive ? 'text-green-800 underline font-semibold' : ''}>Available Camps</NavLink>
       </li>
+      <li>
+        <NavLink to="/feedback" className={({ isActive }) => isActive ? 'text-green-800 underline font-semibold' : ''}>Feedback</NavLink>
+      </li>
     </>
   );
 

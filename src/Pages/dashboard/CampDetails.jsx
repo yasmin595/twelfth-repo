@@ -51,6 +51,9 @@ const CampDetails = () => {
     try {
       const res = await axiosSecure.post("/join-camp", participant);
       if (res.data.insertedId) {
+        // ✅ Role update to participant
+        await axiosSecure.patch(`/users/participant/${user.email}`);
+        
         Swal.fire("✅ Success", "You have joined the camp!", "success");
         setShowModal(false);
         refetch();

@@ -22,6 +22,7 @@ import ManageRegistered from "../Pages/dashboard/ManageRegistered";
 import OrganizerProfile from "../Pages/dashboard/OrganizerProfile";
 import Analytics from "../Pages/dashboard/Analytics";
 import ParticipantProfile from "../Pages/dashboard/ParticipantProfile";
+import FeedbackSection from "../Pages/FeedbackCollection";
 
 
 
@@ -37,7 +38,11 @@ export     const router = createBrowserRouter([
     {
       path:"/available-camps",
       element:<AvailablePage></AvailablePage>,
-    }
+    },
+    {
+      path:"/feedback",
+      element:<FeedbackSection></FeedbackSection>
+    },
     ]
   },
 

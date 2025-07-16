@@ -39,7 +39,7 @@ const slidesData = [
 
 const Banner = () => {
   return (
-    <div className="pb-6 mb-10">
+    <div className="pb-6 mb-10 mt-10">
       <Swiper
         modules={[Pagination]}
         spaceBetween={30}
