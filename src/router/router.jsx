@@ -24,6 +24,8 @@ import Analytics from "../Pages/dashboard/Analytics";
 import ParticipantProfile from "../Pages/dashboard/ParticipantProfile";
 import FeedbackSection from "../Pages/FeedbackCollection";
 import ErrorPage from "../Pages/shared/ErrorPage";
+import AdminRoute from "../provider/AdminRoute";
+import ParticipantRoute from "../provider/ParticipantRoute";
 
 
 
@@ -61,7 +63,7 @@ export     const router = createBrowserRouter([
       {
 
         path:'/dashboard/organizer/add-camp',
-        element:<AddACamp></AddACamp>,
+        element:<AdminRoute><AddACamp></AddACamp></AdminRoute>,
         
       
       },
@@ -69,22 +71,22 @@ export     const router = createBrowserRouter([
       {
 
         path:'/dashboard/organizer/manage-camps',
-        element:<ManageCamps></ManageCamps>,
+        element:<AdminRoute><ManageCamps></ManageCamps></AdminRoute>,
         
       
       },
      {
     path: '/dashboard/organizer/update-camp/:campId',
-    element: <UpdateCamp></UpdateCamp>
+    element: <AdminRoute><UpdateCamp></UpdateCamp></AdminRoute>,
   },
   
   {
     path: '/dashboard/organizer/manage-registered-camps',
-    element: <ManageRegistered></ManageRegistered>
+    element:<AdminRoute> <ManageRegistered></ManageRegistered></AdminRoute>,
   },
   {
     path: '/dashboard/organizer/profile',
-    element: <OrganizerProfile></OrganizerProfile>,
+    element: <AdminRoute><OrganizerProfile></OrganizerProfile></AdminRoute>,
   },
 
 
@@ -99,20 +101,20 @@ export     const router = createBrowserRouter([
       },
       {
         path:"/dashboard/participant/payment-history",
-        element:<PrivateRoute><PaymentHistory></PaymentHistory></PrivateRoute>
+        element:<ParticipantRoute><PaymentHistory></PaymentHistory></ParticipantRoute>,
       }
       ,
       {
         path:"/dashboard/participant/analytics",
-        element:<Analytics></Analytics>
+        element:<ParticipantRoute><Analytics></Analytics></ParticipantRoute>,
       },
       {
         path:"/dashboard/participant/profile",
-        element:<ParticipantProfile></ParticipantProfile>
+        element:<ParticipantRoute><ParticipantProfile></ParticipantProfile></ParticipantRoute>,
       },
       {
         path:"/dashboard/participant/feedback/:id",
-        element:<PrivateRoute><FeedbackForm></FeedbackForm></PrivateRoute>
+        element:<ParticipantRoute><FeedbackForm></FeedbackForm></ParticipantRoute>,
       }
       ,
 
@@ -120,17 +122,17 @@ export     const router = createBrowserRouter([
       {
 
        path: '/dashboard/participant/registered-camps',
-    element: <RegisteredCamps></RegisteredCamps>
+    element: <ParticipantRoute><RegisteredCamps></RegisteredCamps></ParticipantRoute>
   },
   {
 
 path:"/dashboard/payment/:id",
-element:<PaymentPage></PaymentPage>,
+element:<PrivateRoute><PaymentPage></PaymentPage></PrivateRoute>,
 
   },
      {
       path:'/dashboard/*',
-      element:<ErrorPage></ErrorPage>
+      element:<ErrorPage></ErrorPage>,
 
         },
 
