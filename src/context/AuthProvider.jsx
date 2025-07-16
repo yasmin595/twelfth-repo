@@ -11,6 +11,8 @@ import {
 } from "firebase/auth";
 import { AuthContext } from "./AuthContext";
 import app  from "../firebase/firebase.init";
+import useAxios from "../hooks/useAxios";
+// import useAxios from "../hooks/useAxios";
 
 // import App from "../App";
 // import app from "../firebase/firebase.init";
@@ -24,6 +26,7 @@ const auth = getAuth(app);
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const axiosPublic = useAxios();
 
   console.log(loading, user);
 
@@ -45,19 +48,44 @@ const AuthProvider = ({ children }) => {
     return signOut(auth);
   };
 
-useEffect(() => {
-  const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-    setUser(currentUser);
-    setLoading(false);
+// useEffect(() => {
+//   const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+//     setUser(currentUser);
+//     setLoading(false);
 
   
  
-  });
+//   });
 
-  return () => {
-    unsubscribe();
-  };
-}, []);
+
+
+//   return () => {
+//     unsubscribe();
+//   };
+// }, []);
+
+
+useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+            setUser(currentUser);
+            if (currentUser) {
+                const userInfo = { email: currentUser.email }
+                axiosPublic.post('/jwt', userInfo)
+                    .then(res => {
+                        if (res.data.token) {
+                            console.log(res.data.token, 'token')
+                            localStorage.setItem('access-token', res.data.token)
+                        }
+                    })
+            } else {
+                localStorage.removeItem('access-token');
+            }
+            console.log(currentUser, 'user cretar')
+            setLoading(false);
+        });
+
+        return () => unsubscribe();
+    }, [axiosPublic]);
 
 
   const authData = {
