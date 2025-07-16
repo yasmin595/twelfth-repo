@@ -6,6 +6,8 @@ import useAxios from '../../hooks/useAxios';
 import useAuth from '../../hooks/useAuth';
 import SocialLogIn from './SocialLogin';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import logLottie from "../../assets/lottie.json"
+import Lottie from "lottie-react";
 
 const Register = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
@@ -60,7 +62,12 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-green-200 to-green-400 p-6">
+    <div className="min-h-screen flex items-center justify-center p-6">
+
+      <div className='mx-8'>
+      
+    <Lottie className="w-[250px]" animationData={logLottie } loop={true} />
+      </div>
       <div className="card bg-white shadow-2xl rounded-lg w-full max-w-md p-8">
         <h1 className="text-4xl font-extrabold text-green-800 mb-8 text-center">
           Create Account
@@ -138,7 +145,7 @@ const Register = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            className="btn btn-wide bg-green-600 hover:bg-green-700 text-white font-bold transition duration-300"
+            className="btn w-full  bg-green-600 hover:bg-green-700 text-white font-bold transition duration-300"
           >
             Register
           </button>
