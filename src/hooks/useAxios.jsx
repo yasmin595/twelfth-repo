@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-    baseURL: `https://twelfth-assignment-86afb.web.app`
+    baseURL: `https://my-twelfth-assignment-server-orcin.vercel.app`
 })
 
 const useAxios = () => {

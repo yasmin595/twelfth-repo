@@ -73,7 +73,7 @@ useEffect(() => {
                 axiosPublic.post('/jwt', userInfo)
                     .then(res => {
                         if (res.data.token) {
-                            console.log(res.data.token, 'token')
+                            // console.log(res.data.token, 'token')
                             localStorage.setItem('access-token', res.data.token)
                         }
                     })
