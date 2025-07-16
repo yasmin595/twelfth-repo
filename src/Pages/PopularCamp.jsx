@@ -78,7 +78,7 @@ const PopularCamps = () => {
                 </p>
               </div>
 
-              <Link to={`/dashboard/user/details-camp/${camp._id}`}>
+              <Link to={`/user/details-camp/${camp._id}`}>
                 <button className="btn btn-sm btn-outline text-green-700 hover:bg-green-700 hover:text-white mt-2 w-full">
                   View Details
                 </button>

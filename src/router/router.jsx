@@ -52,6 +52,13 @@ export     const router = createBrowserRouter([
       element:<ErrorPage></ErrorPage>
 
         },
+         {
+
+        path:"/user/details-camp/:campId",
+        element:<UserRoute> <CampDetails></CampDetails></UserRoute>,
+        
+      
+      },
     ]
   },
 
@@ -91,13 +98,7 @@ export     const router = createBrowserRouter([
   },
 
 
-   {
-
-        path:"/dashboard/user/details-camp/:campId",
-        element:<UserRoute> <CampDetails></CampDetails></UserRoute>,
-        
-      
-      },
+  
       {
         path:"/dashboard/participant/payment-history",
         element:<ParticipantRoute><PaymentHistory></PaymentHistory></ParticipantRoute>,

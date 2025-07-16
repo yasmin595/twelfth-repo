@@ -152,7 +152,7 @@ const AvailablePage = () => {
               </p>
 
               <Link
-                to={`/dashboard/user/details-camp/${camp._id}`}
+                to={`/user/details-camp/${camp._id}`}
                 className="btn btn-sm bg-green-700 text-white hover:bg-green-800 mt-auto"
               >
                 View Details
