@@ -1,21 +1,27 @@
-import React from 'react';
-import { Navigate, Outlet } from 'react-router';
-import useAuth from '../hooks/useAuth';
+import React from "react";
+import { Navigate, Outlet } from "react-router";
+import useAuth from "../hooks/useAuth";
 
 
 const UserRoute = () => {
-  const { user, userRole, loading } = useAuth(); 
+  const { user, loading, userData } = useAuth(); 
+
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <p>Loading...</p>; 
   }
 
-
-  if (!user || !['user', 'participant'].includes(userRole)) {
-    return <Navigate to="/login" replace />;  
+ 
+  if (!user) {
+    return <Navigate to="/login" replace />;
   }
 
-  return <Outlet />;
+ 
+  if (userData?.role === "participant" || userData?.role === "user") {
+    return <Outlet />;  
+  }
+
+  return <Navigate to="/" replace />;
 };
 
 export default UserRoute;
